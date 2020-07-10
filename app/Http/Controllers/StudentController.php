@@ -36,6 +36,13 @@ class StudentController extends Controller
      */
     public function store(Request $request)
     {
+        $request->validate([
+          'firstname' => 'required|max:255',
+          'lastname' => 'required|max:255',
+          'email' => 'required|max:255',
+          'number' => 'required|numeric|min:10000|max:999999',
+        ]);
+
         $dati_nuovo_studente = $request->all();
         $new_student = new Student();
         $new_student->fill($dati_nuovo_studente);
@@ -49,9 +56,9 @@ class StudentController extends Controller
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function show($id)
+    public function show(Student $student)
     {
-      $student = Student::find($id);
+      // $student = Student::find($id);
       return view('students.show', compact('student'));
     }
 
@@ -61,9 +68,10 @@ class StudentController extends Controller
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function edit($id)
+    public function edit(Student $student)
     {
-        //
+        // $student = Student::find($id);
+        return view('students.edit', compact('student'));
     }
 
     /**
@@ -75,7 +83,17 @@ class StudentController extends Controller
      */
     public function update(Request $request, $id)
     {
-        //
+      $request->validate([
+        'firstname' => 'required|max:255',
+        'lastname' => 'required|max:255',
+        'email' => 'required|max:255',
+        'number' => 'required|numeric|min:10000|max:999999',
+      ]);
+
+      $dati_nuovo_studente = $request->all();
+      $student = Student::find($id);
+      $student->update($dati_nuovo_studente);
+      return redirect()->route('students.index');
     }
 
     /**
@@ -86,6 +104,10 @@ class StudentController extends Controller
      */
     public function destroy($id)
     {
-        //
+        $student = Student::find($id);
+        if($student) {
+          $student->delete();
+        }        
+        return redirect()->route('students.index');
     }
 }
